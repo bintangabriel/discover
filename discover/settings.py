@@ -13,7 +13,7 @@ https://docs.djangoproject.com/en/4.2/ref/settings/
 from pathlib import Path
 import os
 from dotenv import load_dotenv
-import nltk
+# import nltk
 
 
 load_dotenv()
@@ -140,4 +140,4 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 CORS_ALLOW_ALL_ORIGINS = True
 
-nltk.data.path.append('/home/sbx_user1051/nltk_data')
+# nltk.data.path.append('/home/sbx_user1051/nltk_data')

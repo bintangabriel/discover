@@ -7,9 +7,9 @@ from dotenv import load_dotenv
 import os
 import requests
 from bs4 import BeautifulSoup
-import nltk
-from nltk.tokenize import word_tokenize, sent_tokenize
-from nltk.corpus import stopwords
+# import nltk
+# from nltk.tokenize import word_tokenize, sent_tokenize
+# from nltk.corpus import stopwords
 import heapq
 from django.http import HttpResponse, JsonResponse
 from django.views.decorators.csrf import csrf_exempt
@@ -21,9 +21,9 @@ from rest_framework.decorators import *
 import re
 
 load_dotenv()
-nltk.data.path.append('/home/sbx_user1051/nltk_data')
-nltk.download("punkt")
-nltk.download("stopwords")
+# nltk.data.path.append('/home/sbx_user1051/nltk_data')
+# nltk.download("punkt")
+# nltk.download("stopwords")
 
 # Function for retrieving news from previous days
 @csrf_exempt
@@ -147,53 +147,53 @@ def get_articles_about_topic(list_of_topic):
                 news_api_result.append(obj)
     return news_api_result
 
-def summarize_news(url, article_text):
-    if(url is not None):
-    #Fetch the page
-        page = requests.get(url)
-        soup = BeautifulSoup(page.content, 'html.parser')
+# def summarize_news(url, article_text):
+#     if(url is not None):
+#     #Fetch the page
+#         page = requests.get(url)
+#         soup = BeautifulSoup(page.content, 'html.parser')
 
-        #Assuming the article is in a <p> tag
-        article_text = '\n'.join([p.text for p in soup.find_all('p')])
-    else:
-        article_text = article_text
+#         #Assuming the article is in a <p> tag
+#         article_text = '\n'.join([p.text for p in soup.find_all('p')])
+#     else:
+#         article_text = article_text
 
-    words = word_tokenize(article_text)
+#     words = word_tokenize(article_text)
     
-    # Creating a frequency table to keep the score of each word
-    freq_table = dict()
-    for word in words:
-        word = word.lower()
-        if word in stopwords.words('english'):
-            continue
-        if word in freq_table:
-            freq_table[word] += 1
-        else:
-            freq_table[word] = 1
+#     # Creating a frequency table to keep the score of each word
+#     freq_table = dict()
+#     for word in words:
+#         word = word.lower()
+#         if word in stopwords.words('english'):
+#             continue
+#         if word in freq_table:
+#             freq_table[word] += 1
+#         else:
+#             freq_table[word] = 1
     
-    # Tokenizing the sentences
-    sentences = sent_tokenize(article_text)
+#     # Tokenizing the sentences
+#     sentences = sent_tokenize(article_text)
     
-    # Scoring each sentence
-    sentence_scores = dict()
-    for sentence in sentences:
-        for word, freq in freq_table.items():
-            if word in sentence.lower():
-                if sentence in sentence_scores:
-                    sentence_scores[sentence] += freq
-                else:
-                    sentence_scores[sentence] = freq
+#     # Scoring each sentence
+#     sentence_scores = dict()
+#     for sentence in sentences:
+#         for word, freq in freq_table.items():
+#             if word in sentence.lower():
+#                 if sentence in sentence_scores:
+#                     sentence_scores[sentence] += freq
+#                 else:
+#                     sentence_scores[sentence] = freq
     
-    # Getting the summary
-    summary_sentences = heapq.nlargest(7, sentence_scores, key=sentence_scores.get)
-    summary = ' '.join(summary_sentences)
+#     # Getting the summary
+#     summary_sentences = heapq.nlargest(7, sentence_scores, key=sentence_scores.get)
+#     summary = ' '.join(summary_sentences)
     
-    return summary
+#     return summary
 
 
-def summarize_all_news(articles):
-    merged_article = ''.join([article for article in articles])
-    return summarize_news(None, merged_article)
+# def summarize_all_news(articles):
+#     merged_article = ''.join([article for article in articles])
+#     return summarize_news(None, merged_article)
 
 def home(request):
     return HttpResponse("Hello")
