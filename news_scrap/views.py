@@ -21,8 +21,8 @@ from rest_framework.decorators import *
 import re
 
 load_dotenv()
-nltk.download("punkt")
-nltk.download("stopwords")
+# nltk.download("punkt")
+# nltk.download("stopwords")
 
 # Function for retrieving news from previous days
 @csrf_exempt
@@ -32,8 +32,8 @@ def getNewsForDay(request, day): # Day should be yyyymmdd
         news = get_news_from_db(day=day)
         if (news is None) or not news:
             topics = get_topic_from_gtrend(day=day)     # List of topics
+            print(topics)
             articles = get_articles_about_topic(list_of_topic=topics)   # List of articles about topics [{"title" : "  ", "topic" : " " , "url" : " ", "url_image" : " "}]
-
             articles_summary = {}
             topic_source = {}
             topic_image_url = {}
@@ -52,6 +52,7 @@ def getNewsForDay(request, day): # Day should be yyyymmdd
                     source_obj = Sources.objects.create(url=article['url'], title=article['title'])
                     topic_source[current_topic] = [source_obj]
                     source_obj.save()
+            counter = 0 # debug
 
             for topic in articles_summary:
                 json_structured = {}
@@ -66,6 +67,9 @@ def getNewsForDay(request, day): # Day should be yyyymmdd
                 )
                 news_obj.sources.set(topic_source[topic])
                 news_obj.save()
+                counter += 1 
+                print(f"save news {topic}")
+                print(f"save {counter} news")
                 json_structured["day"] = day
                 topic_news.append(json_structured)
 
@@ -96,9 +100,9 @@ def get_news_from_db(day):
         return None
 
 @api_view(['GET'])
-def get_news_by_title(request, title):
+def get_news_by_title(request, slug):
     try:
-        news = News.objects.get(title=title)
+        news = News.objects.get(slug=slug)
         serializer = NewsSerializer(news)
         json_data = serializer.data
         return JsonResponse(json_data)
@@ -111,12 +115,15 @@ def get_topic_from_gtrend(day):
     data = json.loads(res.text.replace(")]}',", ""))
     counter = 0
     for dt in data["default"]["trendingSearchesDays"][0]["trendingSearches"]:
-        if counter < 3:
-            obj = {
+        if (day == 20240226) & (dt['title']['query'] == "Epic"):
+            counter = counter
+        else: 
+            if counter < 3:
+                obj = { 
                 "topic": dt["title"]["query"],
                 }
-            result.append(obj)
-            counter += 1
+                result.append(obj)
+                counter += 1
     return result
 
 
@@ -217,7 +224,7 @@ def tes_remove(request):
 
 def render_all_news(request):
     try :
-        for i in range(20240217, 20240228):
+        for i in range(202402246, 20240228):
             getNewsForDay(request, i)
         return HttpResponse("Succedd")
     except Exception as e:
