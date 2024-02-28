@@ -21,7 +21,7 @@ from rest_framework.decorators import *
 import re
 
 load_dotenv()
-nltk.data.path.append(os.path.join(os.getcwd(), 'nltk_data'))
+nltk.data.path.append('/home/sbx_user1051/nltk_data')
 nltk.download("punkt")
 nltk.download("stopwords")
 

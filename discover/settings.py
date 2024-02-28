@@ -140,4 +140,4 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 CORS_ALLOW_ALL_ORIGINS = True
 
-nltk.data.path.append(os.path.join(os.getcwd(), 'nltk_data'))
+nltk.data.path.append('/home/sbx_user1051/nltk_data')
