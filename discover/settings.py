@@ -139,5 +139,3 @@ STATIC_URL = 'static/'
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 CORS_ALLOW_ALL_ORIGINS = True
-
-# nltk.data.path.append('/home/sbx_user1051/nltk_data')

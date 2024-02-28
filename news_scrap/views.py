@@ -7,9 +7,6 @@ from dotenv import load_dotenv
 import os
 import requests
 from bs4 import BeautifulSoup
-# import nltk
-# from nltk.tokenize import word_tokenize, sent_tokenize
-# from nltk.corpus import stopwords
 import heapq
 from django.http import HttpResponse, JsonResponse
 from django.views.decorators.csrf import csrf_exempt
@@ -21,9 +18,6 @@ from rest_framework.decorators import *
 import re
 
 load_dotenv()
-# nltk.data.path.append('/home/sbx_user1051/nltk_data')
-# nltk.download("punkt")
-# nltk.download("stopwords")
 
 # Function for retrieving news from previous days
 @csrf_exempt
@@ -31,49 +25,9 @@ load_dotenv()
 def getNewsForDay(request, day): # Day should be yyyymmdd
     if request.method == "GET":
         news = get_news_from_db(day=day)
-        if (news is None) or not news:
-            topics = get_topic_from_gtrend(day=day)     # List of topics
-            articles = get_articles_about_topic(list_of_topic=topics)   # List of articles about topics [{"title" : "  ", "topic" : " " , "url" : " ", "url_image" : " "}]
-
-            articles_summary = {}
-            topic_source = {}
-            topic_image_url = {}
-            topic_news = []
-            
-            for article in articles:
-                current_topic = article["topic"]
-                if (current_topic in articles_summary):
-                    articles_summary[current_topic].append(summarize_news(article['url'], None))
-                    source_obj = Sources.objects.create(url=article['url'], title=article['title'])
-                    topic_source[current_topic].append(source_obj)
-                    source_obj.save()
-                else:
-                    topic_image_url[current_topic] = article["image_url"]
-                    articles_summary[current_topic] = [summarize_news(article['url'], None)]
-                    source_obj = Sources.objects.create(url=article['url'], title=article['title'])
-                    topic_source[current_topic] = [source_obj]
-                    source_obj.save()
-
-            for topic in articles_summary:
-                json_structured = {}
-                json_structured["title"] = topic
-                json_structured["image_url"] = topic_image_url[topic]
-                json_structured["content"] = summarize_all_news(articles=articles_summary[topic])
-                news_obj = News.objects.create(
-                    title=topic,
-                    content=json_structured["content"],
-                    day=day,
-                    image_url = topic_image_url[topic]
-                )
-                news_obj.sources.set(topic_source[topic])
-                news_obj.save()
-                json_structured["day"] = day
-                topic_news.append(json_structured)
-
-            final_result = {"news":topic_news}
-            return JsonResponse(final_result)
-        
-        else :
+        if not news:
+            return JsonResponse({"message": "finished"})
+        else:
             result = {}
             arr_result = []
             for n in news:
@@ -97,9 +51,9 @@ def get_news_from_db(day):
         return None
 
 @api_view(['GET'])
-def get_news_by_title(request, title):
+def get_news_by_slug(request, slug):
     try:
-        news = News.objects.get(title=title)
+        news = News.objects.get(slug=slug)
         serializer = NewsSerializer(news)
         json_data = serializer.data
         return JsonResponse(json_data)
@@ -147,54 +101,6 @@ def get_articles_about_topic(list_of_topic):
                 news_api_result.append(obj)
     return news_api_result
 
-# def summarize_news(url, article_text):
-#     if(url is not None):
-#     #Fetch the page
-#         page = requests.get(url)
-#         soup = BeautifulSoup(page.content, 'html.parser')
-
-#         #Assuming the article is in a <p> tag
-#         article_text = '\n'.join([p.text for p in soup.find_all('p')])
-#     else:
-#         article_text = article_text
-
-#     words = word_tokenize(article_text)
-    
-#     # Creating a frequency table to keep the score of each word
-#     freq_table = dict()
-#     for word in words:
-#         word = word.lower()
-#         if word in stopwords.words('english'):
-#             continue
-#         if word in freq_table:
-#             freq_table[word] += 1
-#         else:
-#             freq_table[word] = 1
-    
-#     # Tokenizing the sentences
-#     sentences = sent_tokenize(article_text)
-    
-#     # Scoring each sentence
-#     sentence_scores = dict()
-#     for sentence in sentences:
-#         for word, freq in freq_table.items():
-#             if word in sentence.lower():
-#                 if sentence in sentence_scores:
-#                     sentence_scores[sentence] += freq
-#                 else:
-#                     sentence_scores[sentence] = freq
-    
-#     # Getting the summary
-#     summary_sentences = heapq.nlargest(7, sentence_scores, key=sentence_scores.get)
-#     summary = ' '.join(summary_sentences)
-    
-#     return summary
-
-
-# def summarize_all_news(articles):
-#     merged_article = ''.join([article for article in articles])
-#     return summarize_news(None, merged_article)
-
 def home(request):
     return HttpResponse("Hello")
         
@@ -220,6 +126,13 @@ def render_all_news(request):
     try :
         for i in range(20240217, 20240228):
             getNewsForDay(request, i)
-        return HttpResponse("Succedd")
+        return HttpResponse("Succeed")
     except Exception as e:
         return f"Error : {e}"
+    
+def clean_content_text(request):
+    all_news = News.objects.all()
+    for news in all_news:
+        news.content = remove_unwanted_chars(news.content)
+        news.save()
+    return HttpResponse("Succeed")

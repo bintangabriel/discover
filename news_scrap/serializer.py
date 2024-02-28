@@ -12,3 +12,4 @@ class NewsSerializer(serializers.Serializer):
     content=serializers.CharField()
     sources=SourceSerializer(many=True, read_only=True)
     day=serializers.IntegerField()
+    slug=serializers.SlugField(max_length=255)
