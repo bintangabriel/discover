@@ -1,21 +1,21 @@
-# Byte-compiled / optimized Python files
-*.pyc
-__pycache__/
+# # Byte-compiled / optimized Python files
+# *.pyc
+# __pycache__/
 
-# Django settings file
-/myproject/settings.py
+# # Django settings file
+# /myproject/settings.py
 
-# Virtual environment
-venv/
-.env
+# # Virtual environment
+# venv/
+# .env
 
-# Static files directory
-/static/
+# # Static files directory
+# /static/
 
-# Media files directory
-/media/
+# # Media files directory
+# /media/
 
-# Database file
-db.sqlite3
+# # Database file
+# db.sqlite3
 
-.env
+# .env
