@@ -1,0 +1,21 @@
+# Byte-compiled / optimized Python files
+*.pyc
+__pycache__/
+
+# Django settings file
+/myproject/settings.py
+
+# Virtual environment
+venv/
+.env
+
+# Static files directory
+/static/
+
+# Media files directory
+/media/
+
+# Database file
+db.sqlite3
+
+.env

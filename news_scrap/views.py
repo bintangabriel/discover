@@ -53,7 +53,6 @@ def getNewsForDay(request, day): # Day should be yyyymmdd
                     topic_source[current_topic] = [source_obj]
                     source_obj.save()
 
-            counter = 0 #debug purpose
             for topic in articles_summary:
                 json_structured = {}
                 json_structured["title"] = topic
