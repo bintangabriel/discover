@@ -41,6 +41,7 @@ def getNewsForDay(request, day): # Day should be yyyymmdd
             
             for article in articles:
                 current_topic = article["topic"]
+                print("here")
                 if (current_topic in articles_summary):
                     articles_summary[current_topic].append(summarize_news(article['url'], None))
                     source_obj = Sources.objects.create(url=article['url'], title=article['title'])
@@ -49,9 +50,11 @@ def getNewsForDay(request, day): # Day should be yyyymmdd
                 else:
                     topic_image_url[current_topic] = article["image_url"]
                     articles_summary[current_topic] = [summarize_news(article['url'], None)]
+                    print("here2")
                     source_obj = Sources.objects.create(url=article['url'], title=article['title'])
                     topic_source[current_topic] = [source_obj]
                     source_obj.save()
+                    print("hereeeeeeee")
             counter = 0 # debug
 
             for topic in articles_summary:
@@ -156,7 +159,7 @@ def get_articles_about_topic(list_of_topic):
 def summarize_news(url, article_text):
     if(url is not None):
     #Fetch the page
-        page = requests.get(url)
+        page = httpx.get(url)
         soup = BeautifulSoup(page.content, 'html.parser')
 
         #Assuming the article is in a <p> tag
